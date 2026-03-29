@@ -39,14 +39,23 @@ app.get("/", async (req, res) => {
 app.post("/add", async (req, res) => {
   const add = req.body.newItem;
   try{
-  const result = await db.query("INSERT INTO items (title) values ($1)", [add]);
+  await db.query("INSERT INTO items (title) values ($1)", [add]);
   res.redirect("/");
   }catch(err){
     console.log(err);
   }
 });
 
-app.post("/edit", (req, res) => {console.log(req.body)});
+app.post("/edit", async (req, res) => {
+  const title = req.body.updatedItemTitle;
+  const id = req.body.updatedItemId;
+  try{
+    await db.query("UPDATE items set title = $1 where id = $2", [title , id]);
+    res.redirect("/"); 
+  }catch(err){
+    console.log(err);
+  }
+});
 
 app.post("/delete", (req, res) => {console.log(req.body)});
 
