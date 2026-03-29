@@ -23,21 +23,27 @@ app.use(express.static("public"));
 
 let items = []
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
   try{
-  res.render("index.ejs", {
-    listTitle: "Today",
-    listItems: items,
-  });
+  const result = await db.query("SELECT * FROM items ")
+    const items = result.rows;
+    res.render("index.ejs", {
+      listTitle: "Today",
+      listItems: items,
+    });
 }catch(err){
   console.log(err)
 }
 });
 
-app.post("/add", (req, res) => {
-  const item = req.body.newItem;
-  items.push({ title: item });
+app.post("/add", async (req, res) => {
+  const add = req.body.newItem;
+  try{
+  const result = await db.query("INSERT INTO items (title) values ($1)", [add]);
   res.redirect("/");
+  }catch(err){
+    console.log(err);
+  }
 });
 
 app.post("/edit", (req, res) => {console.log(req.body)});
